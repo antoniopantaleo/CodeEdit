@@ -41,7 +41,11 @@ struct QuickOpenView: View {
             text: $state.openQuicklyQuery,
             optionRowHeight: 40
         ) { file in
-            QuickOpenItem(baseDirectory: state.fileURL, fileURL: file)
+            QuickOpenItem(
+                baseDirectory: state.fileURL,
+                fileURL: file,
+                searchQuery: $state.openQuicklyQuery
+            )
         } preview: { fileURL in
             QuickOpenPreviewView(item: CEWorkspaceFile(url: fileURL))
         } onRowClick: { fileURL in

@@ -10,17 +10,28 @@ import SwiftUI
 struct QuickOpenItem: View {
     private let baseDirectory: URL
     private let fileURL: URL
+    @Binding private var searchQuery: String
 
     init(
         baseDirectory: URL,
-        fileURL: URL
+        fileURL: URL,
+        searchQuery: Binding<String>
     ) {
         self.baseDirectory = baseDirectory
         self.fileURL = fileURL
+        self._searchQuery = searchQuery
     }
 
     var relativePathComponents: ArraySlice<String> {
         return fileURL.pathComponents.dropFirst(baseDirectory.pathComponents.count).dropLast()
+    }
+
+    private var highlightedFileName: AttributedString {
+        let attributedText = QuickOpenTextFormatter.highlightText(
+            fileURL.lastPathComponent,
+            fromSearchQuery: searchQuery
+        )
+        return AttributedString(attributedText)
     }
 
     var body: some View {
@@ -30,7 +41,7 @@ struct QuickOpenItem: View {
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 24, height: 24)
             VStack(alignment: .leading, spacing: 0) {
-                Text(fileURL.lastPathComponent).font(.system(size: 13))
+                Text(highlightedFileName)
                     .lineLimit(1)
                 Text(relativePathComponents.joined(separator: " ▸ "))
                     .font(.system(size: 10.5))
